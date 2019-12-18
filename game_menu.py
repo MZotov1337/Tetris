@@ -111,4 +111,3 @@ def open_game():
     sound_on_off = False
     create_main_menu()
 
-open_game()
