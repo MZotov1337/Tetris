@@ -1,14 +1,10 @@
 from tkinter import Canvas, Label, Tk, StringVar, Button, LEFT
 from random import choice, randint
-from Module_Piece import *
-from Module_Shape import *
 from Module_Canvas import *
-from game_menu import *
-#from Module_Arkitecture import *
+from Module_Menu import *
 col = ["blue", "yellow", "green", "red", "cyan", "magenta"]
 
-class Arkitecture():
-    SHAPES = ([(0, 0), (1, 0), (0, 1), (1, 1)],     # Square
+SHAPES = ([(0, 0), (1, 0), (0, 1), (1, 1)],     # Square
               [(0, 0), (1, 0), (2, 0), (3, 0)],     # Stick
               [(2, 0), (0, 1), (1, 1), (2, 1)],     # Right L
               [(0, 0), (0, 1), (1, 1), (2, 1)],     # Left L
@@ -16,8 +12,9 @@ class Arkitecture():
               [(0, 0), (1, 0), (1, 1), (2, 1)],     # Left Z
               [(1, 0), (0, 1), (1, 1), (2, 1)])     # T
 
+class Arkitecture():
+    global SHAPES
     LENGTH = 20
-
     width = 300
     height = 500
     SrartPos = width / 2 / LENGTH * LENGTH - LENGTH
@@ -141,7 +138,7 @@ class Arkitecture():
             self.score += 1500
 
     def game_canvas(self):
-        self.canvas = GameCanvas(self.root, width = Arkitecture.width, height = Arkitecture.height, bg = 'Black')
+        self.canvas = Canvas(self.root, width = Arkitecture.width, height = Arkitecture.height, bg = 'Black')  #!GameCanvas
         self.canvas.pack(padx = 5 ,side=LEFT)
 
 
@@ -189,5 +186,135 @@ class Arkitecture():
     level = property(lvl, ZerLvl)
     score = property(Score, ZerScore)
     Number = property(Number, ZerNumber)
+    
+
+class Shape():
+    global SHAPES
+    def __init__(self, coords = None):
+        if not coords:
+            self.__coords = choice(SHAPES)
+        else:
+            self.__coords = coords
+
+    @property
+    def coords(self):
+        return self.__coords
+
+    def rotate(self):  
+        self.__coords = self.__rotate()
+
+    def rotate_directions(self):
+        rotated = self.__rotate()
+        directions = [(rotated[i][0] - self.__coords[i][0],
+                       rotated[i][1] - self.__coords[i][1]) for i in range(len(self.__coords))]
+
+        return directions
+
+    @property
+    def matrix(self):
+        return [[1 if (j, i) in self.__coords else 0 \
+                 for j in range(max(self.__coords, key=lambda x: x[0])[0] + 1)] \
+                 for i in range(max(self.__coords, key=lambda x: x[1])[1] + 1)]
+
+    def drop(self, board, offset):
+        off_x, off_y = offset
+        last_level = len(board) - len(self.matrix) + 1
+        for level in range(off_y, last_level):
+            for i in range(len(self.matrix)):
+                for j in range(len(self.matrix[0])):
+                    if board[level+i][off_x+j] == 1 and self.matrix[i][j] == 1:
+                        return level - 1
+        return last_level - 1  
+
+    def __rotate(self):
+        max_x = max(self.__coords, key=lambda x:x[0])[0]
+        new_original = (max_x, 0)
+
+        rotated = [(new_original[0] - coord[1],
+                    new_original[1] + coord[0]) for coord in self.__coords]
+
+        min_x = min(rotated, key=lambda x:x[0])[0]
+        min_y = min(rotated, key=lambda x:x[1])[1]
+        return [(coord[0] - min_x, coord[1] - min_y) for coord in rotated]
+
+class Piece():
+    def __init__(self, canvas, Point0, shape = None):
+        self.shapes = shape
+        if not shape:
+            self.shapes = Shape()
+        self.canvas = canvas
+        self.Piecees = self.__create_Piecees(Point0)
+
+    @property
+    def shape(self):
+        return self.shapes
+
+    def move(self, direction):
+        if all(self.__can_move(self.canvas.coords(Piece), direction) for Piece in self.Piecees):
+            x, y = direction
+            for Piece in self.Piecees:
+                self.canvas.move(Piece, x * Arkitecture.LENGTH, y * Arkitecture.LENGTH)
+            return True
+        return False
+
+    def rotate(self):
+        directions = self.shapes.rotate_directions()
+        if all(self.__can_move(self.canvas.coords(self.Piecees[i]), directions[i]) for i in range(len(self.Piecees))):
+            self.shapes.rotate()
+            for i in range(len(self.Piecees)):
+                x, y = directions[i]
+                self.canvas.move(self.Piecees[i],
+                                 x * Arkitecture.LENGTH,
+                                 y * Arkitecture.LENGTH)
+
+    @property
+    def offset(self):
+        return (min(int(self.canvas.coords(Piece)[0]) // Arkitecture.LENGTH for Piece in self.Piecees), min(int(self.canvas.coords(Piece)[1]) // Arkitecture.LENGTH for Piece in self.Piecees))
+
+    def predict_movement(self, board):
+        level = self.shapes.drop(board, self.offset)
+        min_y = min([self.canvas.coords(Piece)[1] for Piece in self.Piecees])
+        return (0, level - (min_y // Arkitecture.LENGTH))
+
+    def predict_drop(self, board):
+        level = self.shapes.drop(board, self.offset)
+        self.remove_predicts()
+
+        min_y = min([self.canvas.coords(Piece)[1] for Piece in self.Piecees])
+        for Piece in self.Piecees:
+            x1, y1, x2, y2 = self.canvas.coords(Piece)
+            Piece = self.canvas.create_rectangle(x1, level * Arkitecture.LENGTH + (y1 - min_y), x2, (level + 1) * Arkitecture.LENGTH + (y1 - min_y), fill="white", tags = "predict")
+
+    def remove_predicts(self):
+        for i in self.canvas.find_withtag('predict'):
+            self.canvas.delete(i) 
+        self.canvas.update()
+
+    def __create_Piecees(self, Point0):
+        Piecees = []
+        off_x, off_y = Point0
+        for coord in self.shapes.coords:
+            x, y = coord
+            Piece = self.canvas.create_rectangle(x * Arkitecture.LENGTH + off_x, y * Arkitecture.LENGTH + off_y, x * Arkitecture.LENGTH + Arkitecture.LENGTH + off_x, y * Arkitecture.LENGTH + Arkitecture.LENGTH + off_y, fill=choice(col), tags="game")
+            Piecees += [Piece]
+
+        return Piecees
+
+    def __can_move(self, Piece_coords, new_pos):
+        x, y = new_pos
+        x = x * Arkitecture.LENGTH 
+        y = y * Arkitecture.LENGTH
+        x_left, y_up, x_right, y_down = Piece_coords
+
+        overlap = set(self.canvas.find_overlapping((x_left + x_right) / 2 + x, 
+                                                   (y_up + y_down) / 2 + y, 
+                                                   (x_left + x_right) / 2 + x,
+                                                   (y_up + y_down) / 2 + y))
+        other_items = set(self.canvas.find_withtag('game')) - set(self.Piecees)
+
+        if y_down + y > Arkitecture.height or x_left + x < 0 or x_right + x > Arkitecture.width or overlap & other_items:
+            return False
+        return True
+
 game = Arkitecture(True)
 game.start()
