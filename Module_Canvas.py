@@ -2,11 +2,13 @@ from tkinter import Canvas, Label, Tk, StringVar, Button, LEFT
 from random import choice, randint
 from Module_Piece import *
 from Module_Shape import *
-from Module_Canvas import *
+from game_menu import *
 from Module_Arkitecture import *
 col = ["blue", "yellow", "green", "red", "cyan", "magenta"]
 
 class GameCanvas(Canvas):
+    def __init__(self, rt, wid, hei, bg):
+        self = Canvas(rt, width = wid, height = hei, background = bg)
     
     def drop_Piecees(self, Piecees_to_drop):
         for Piece in Piecees_to_drop:

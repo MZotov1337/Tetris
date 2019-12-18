@@ -1,6 +1,6 @@
 from tkinter import Canvas, Label, Tk, StringVar, Button, LEFT
 from random import choice, randint
-from Module_Piece import *
+from game_menu import *
 from Module_Shape import *
 from Module_Canvas import *
 from Module_Arkitecture import *

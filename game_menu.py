@@ -2,6 +2,10 @@ from tkinter import *
 import time
 from PIL import ImageTk, Image
 from pygame import mixer
+from Module_Piece import *
+from Module_Shape import *
+from Module_Canvas import *
+from Module_Arkitecture import *
 
 def create_main_menu():
     global buttons, win_menu, images

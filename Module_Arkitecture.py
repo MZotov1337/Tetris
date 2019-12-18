@@ -3,7 +3,8 @@ from random import choice, randint
 from Module_Piece import *
 from Module_Shape import *
 from Module_Canvas import *
-from Module_Arkitecture import *
+from game_menu import *
+#from Module_Arkitecture import *
 col = ["blue", "yellow", "green", "red", "cyan", "magenta"]
 
 class Arkitecture():
@@ -188,3 +189,5 @@ class Arkitecture():
     level = property(lvl, ZerLvl)
     score = property(Score, ZerScore)
     Number = property(Number, ZerNumber)
+game = Arkitecture(True)
+game.start()
