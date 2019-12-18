@@ -28,9 +28,15 @@ def create_main_menu():
     
     img3 = ImageTk.PhotoImage(Image.open("Buttons/settings.jpg"))
     button3 = Button(root, image=img3, command=create_settings_menu)   #settings button
-    button3.place(x=50, y=355)
+    button3.place(x=55, y=350)
     buttons.append(button3)
     images.append(img3)
+
+    img4 = ImageTk.PhotoImage(Image.open("Buttons/exit.jpg"))
+    button4 = Button(root, image=img4, command=create_exit_menu)   #settings button
+    button4.place(x=54, y=390)
+    buttons.append(button4)
+    images.append(img4)
     
 def create_settings_menu():
     global buttons, win_menu, images
@@ -45,11 +51,11 @@ def create_settings_menu():
     win_menu = Label(text = '', image = img)
     win_menu.place(x=0, y=0)
 
-    img4 = ImageTk.PhotoImage(Image.open("buttons/back.jpg"))
-    button4 = Button(root, image=img4, command=create_main_menu) #back to main menu button
-    button4.place(x=20, y=505)
-    buttons.append(button4)
-    images.append(img4)
+    img5 = ImageTk.PhotoImage(Image.open("buttons/back.jpg"))
+    button5 = Button(root, image=img5, command=create_main_menu) #back to main menu button
+    button5.place(x=20, y=505)
+    buttons.append(button5)
+    images.append(img5)
 
     global sound_on_off
     sound_button = Checkbutton(text="Звук", command = change_sound_existance, variable = sound_on_off, onvalue=1, offvalue=0)
@@ -57,6 +63,18 @@ def create_settings_menu():
     buttons.append(sound_button)
     sound_button.deselect()
     sound_on_off = False
+
+def stop_game():
+    exit()
+
+def create_exit_menu():
+    global buttons
+    yes = Radiobutton(text = 'Выход', font = 'Times 30', command = stop_game)
+    no = Radiobutton(text = 'Отмена', font = 'Times 30', command = create_main_menu)
+    buttons.append(yes)
+    buttons.append(no)
+    yes.place(x=90, y=260)
+    no.place(x=250, y=260)
 
 def play_short_sound():
     global sound_on_off
