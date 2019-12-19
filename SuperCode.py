@@ -344,7 +344,7 @@ class Arkitecture():
     score = property(Score, ZerScore)
     Number = property(Number, ZerNumber)
 
-
-game = Arkitecture(predictable = True)
-game.start()
+def start_of_starting_game():
+    game = Arkitecture(predictable = True)
+    game.start()
 

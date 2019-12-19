@@ -2,6 +2,7 @@ from tkinter import *
 import time
 from PIL import ImageTk, Image
 from pygame import mixer
+from SuperCode import *
 
 def create_main_menu():
     global buttons, win_menu, images
@@ -21,7 +22,7 @@ def create_main_menu():
     play_intro_music()
 
     img2 = ImageTk.PhotoImage(Image.open("Buttons/push_start.jpg"))
-    button2 = Button(root, image=img2, command=create_settings_menu)   #start button
+    button2 = Button(root, image=img2, command=start_of_starting_game)   #start button
     button2.place(x=100, y=350)
     buttons.append(button2)
     images.append(img2)
@@ -110,3 +111,5 @@ def open_game():
     global sound_on_off
     sound_on_off = False
     create_main_menu()
+
+open_game()
