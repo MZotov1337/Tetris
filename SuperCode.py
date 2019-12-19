@@ -15,12 +15,12 @@ class GameCanvas(Canvas):
             self.move(Piece, 0, Arkitecture.LENGTH)
         self.update()    
     
-    def clean_line(self, Deleting):
+    def clean_line(self, Deleting): #clean fully-completed line
         for Piece in Deleting:
             self.delete(Piece)
         self.update()
 
-    def completed_lines(self, YY):
+    def completed_lines(self, YY):   #checks fully-completed lines at the bottom
         cleaned_lines = 0
         YY = sorted(YY)
         for y in YY:
@@ -30,7 +30,7 @@ class GameCanvas(Canvas):
                 cleaned_lines += 1
         return cleaned_lines
 
-    def game_board(self):
+    def game_board(self): 
         board = [[0] * ((Arkitecture.width - 20) // Arkitecture.LENGTH) for _ in range(Arkitecture.height // Arkitecture.LENGTH)]
         for Piece in self.find_withtag('game'):
             x, y, _, _ = self.coords(Piece)
@@ -39,7 +39,7 @@ class GameCanvas(Canvas):
     def Piecees(self):
         return self.find_withtag('game') == self.find_withtag(fill="blue")
 
-class Shape():
+class Shape(): #moving of several pieces
     def __init__(self, coords = None):
         if not coords:
             self.__coords = choice(Arkitecture.SHAPES)
@@ -61,7 +61,7 @@ class Shape():
         return directions
 
     @property
-    def matrix(self):
+    def matrix(self):  #matrix contains existance of pieces
         return [[1 if (j, i) in self.__coords else 0 \
                  for j in range(max(self.__coords, key=lambda x: x[0])[0] + 1)] \
                  for i in range(max(self.__coords, key=lambda x: x[1])[1] + 1)]
@@ -87,7 +87,7 @@ class Shape():
         min_y = min(rotated, key=lambda x:x[1])[1]
         return [(coord[0] - min_x, coord[1] - min_y) for coord in rotated]
 
-class Piece():
+class Piece():  #cubes
     def __init__(self, canvas, Point0, shape = None):
         self.shapes = shape
         if not shape:
@@ -121,7 +121,7 @@ class Piece():
     def offset(self):
         return (min(int(self.canvas.coords(Piece)[0]) // Arkitecture.LENGTH for Piece in self.Piecees), min(int(self.canvas.coords(Piece)[1]) // Arkitecture.LENGTH for Piece in self.Piecees))
 
-    def predict_movement(self, board):
+    def predict_movement(self, board):   #white shape showing the place wrere real shape will land
         level = self.shapes.drop(board, self.offset)
         min_y = min([self.canvas.coords(Piece)[1] for Piece in self.Piecees])
         return (0, level - (min_y // Arkitecture.LENGTH))
@@ -203,7 +203,7 @@ class Arkitecture():
         self.levelsc()
         self.NxtPiece()
 
-    def game_control(self, event):
+    def game_control(self, event):  #describing keys
         if event.char in ["s", "S", "\uf702"]:
             self.current_piece.move((-1, 0))
             self.update_predict()
