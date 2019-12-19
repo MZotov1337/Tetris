@@ -116,7 +116,7 @@ def play_gameplay_music():
 def stop_music():
     mixer.music.pause()
 
-def open_game():
+def main():
     global root
     root = Tk()
     root.geometry('500x550')
@@ -139,6 +139,7 @@ def start_of_starting_game():
     play_gameplay_music()
     game = Arkitecture(predictable = True)
     game.start()
-    open_game()
+    main()
 
-open_game()
+if __name__ == "__main__":
+    main()
