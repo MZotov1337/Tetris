@@ -3,6 +3,7 @@ import time
 from PIL import ImageTk, Image
 from pygame import mixer
 from SuperCode import *
+from random import choice, randint
 
 def create_main_menu():
     global buttons, win_menu, images
@@ -19,6 +20,7 @@ def create_main_menu():
     win_menu = Label(text = '', image = img)
     win_menu.place(x=0, y=0)
 
+    stop_music()
     play_intro_music()
 
     img2 = ImageTk.PhotoImage(Image.open("Buttons/push_start.jpg"))
@@ -81,8 +83,8 @@ def play_short_sound():
     global sound_on_off
     if not(sound_on_off):
         return
-    mixer.music.load('Music/button_sound.mp3')
-    mixer.music.play()
+    mixer.load('Music/button_sound.mp3')
+    mixer.play()
 
 def play_intro_music():
     global sound_on_off
@@ -95,6 +97,24 @@ def change_sound_existance():
     global sound_on_off
     sound_on_off = not(sound_on_off)
     print('&', sound_on_off)
+
+def play_gameplay_music():
+    global sound_on_off
+    if not(sound_on_off):
+        return
+    track = randint(0, 3)
+    if track == 0:
+        mixer.music.load('Music/music_1.mp3.mid')
+    if track == 1:
+        mixer.music.load('Music/music_2.mp3.mid')
+    if track == 2:
+        mixer.music.load('Music/music_3.mp3.mid')
+    if track == 3:
+        mixer.music.load('Music/music_4.mp3.mid')
+    mixer.music.play(-1)
+
+def stop_music():
+    mixer.music.pause()
 
 def open_game():
     global root
@@ -109,12 +129,14 @@ def open_game():
     global buttons
     buttons =[]
     global sound_on_off
-    sound_on_off = False
+    sound_on_off = True
     create_main_menu()
 
 def start_of_starting_game():
     global root
     root.destroy()
+    stop_music()
+    play_gameplay_music()
     game = Arkitecture(predictable = True)
     game.start()
     open_game()
