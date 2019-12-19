@@ -362,3 +362,5 @@ class Arkitecture():
     score = property(Score, ZerScore)
     Number = property(Number, ZerNumber)
 
+if __name__ == "__main__":
+    print("This module is not for direct call!")
