@@ -70,8 +70,8 @@ def stop_game():
 
 def create_exit_menu():
     global buttons
-    yes = Radiobutton(text = 'Выход', font = 'Times 30', command = stop_game)
-    no = Radiobutton(text = 'Отмена', font = 'Times 30', command = create_main_menu)
+    yes = Button(text = 'Выход', font = 'Times 30', command = stop_game)
+    no = Button(text = 'Отмена', font = 'Times 30', command = create_main_menu)
     buttons.append(yes)
     buttons.append(no)
     yes.place(x=90, y=260)
@@ -111,5 +111,12 @@ def open_game():
     global sound_on_off
     sound_on_off = False
     create_main_menu()
+
+def start_of_starting_game():
+    global root
+    root.destroy()
+    game = Arkitecture(predictable = True)
+    game.start()
+    open_game()
 
 open_game()

@@ -1,7 +1,12 @@
 from tkinter import Canvas, Label, Tk, StringVar, Button, LEFT
 from random import choice, randint
+import time
+from PIL import ImageTk, Image
+from pygame import mixer
 
 col = ["blue", "yellow", "green", "red", "black", "cyan", "magenta"]
+global images
+images = []
 
 class GameCanvas(Canvas):
     
@@ -187,6 +192,13 @@ class Arkitecture():
         self.root.geometry("500x550") 
         self.root.title('Tetryais')
         self.root.bind("<Key>", self.game_control)
+        
+        global images
+        img = ImageTk.PhotoImage(Image.open("Textures\gameplay.jpg"))   #the only way to create background in function
+        images.append(img)
+        win_menu = Label(text = '', image = img)
+        win_menu.place(x=0, y=0)
+        
         self.game_canvas()
         self.levelsc()
         self.NxtPiece()
@@ -220,6 +232,9 @@ class Arkitecture():
         self.next_piece = None        
 
         self.game_board = [[0] * ((Arkitecture.width - 20) // Arkitecture.LENGTH) for _ in range(Arkitecture.height // Arkitecture.LENGTH)]
+
+        early_exit_button = Button(text = 'Выход', font = 'Times 10', command = self.quit)
+        early_exit_button.place(x=357, y=500)
 
         self.update_piece()
 
@@ -267,10 +282,10 @@ class Arkitecture():
     def is_game_over(self):
         if not self.current_piece.move((0,1)):
 
-            self.Again = Button(self.root, text="Play Again", command=self.play_again)
-            self.Exit = Button(self.root, text="Exit", command=self.quit) 
-            self.Again.place(x = Arkitecture.width + 10, y = 200, width=100, height=25)
-            self.Exit.place(x = Arkitecture.width + 10, y = 300, width=100, height=25)
+            self.Again = Button(self.root, text="Играть заново", command=self.play_again)
+            self.Exit = Button(self.root, text="Выход", command=self.quit) 
+            self.Again.place(x = Arkitecture.width + 60, y = 200, width=100, height=25)
+            self.Exit.place(x = Arkitecture.width + 60, y = 300, width=100, height=25)
             return True
         return False
 
@@ -280,7 +295,10 @@ class Arkitecture():
         self.start()
 
     def quit(self):
-        self.root.quit()     
+        print('&')
+        #self.root.quit()
+        #exit()
+        self.root.destroy()
 
     def completed_lines(self):
         YY = [self.canvas.coords(Piece)[3] for Piece in self.current_piece.Piecees]
@@ -315,7 +333,7 @@ class Arkitecture():
         self.canvas.create_line(10, self.height, self.width-10, self.height, fill = "red", tags = "line")
 
     def __draw_next_canvas_frame(self):
-        self.next_canvas.create_rectangle(10, 10, 90, 90, tags="frame")
+        self.next_canvas.create_rectangle(2, 2, 99, 99, tags="frame")
 
     #Here we get lvl, number of pieces 
     def lvl(self):
@@ -343,8 +361,4 @@ class Arkitecture():
     level = property(lvl, ZerLvl)
     score = property(Score, ZerScore)
     Number = property(Number, ZerNumber)
-
-def start_of_starting_game():
-    game = Arkitecture(predictable = True)
-    game.start()
 
