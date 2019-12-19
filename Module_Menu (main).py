@@ -83,8 +83,8 @@ def play_short_sound():
     global sound_on_off
     if not(sound_on_off):
         return
-    mixer.load('Music/button_sound.mp3')
-    mixer.play()
+    mixer.music.load('Music/button_sound.mp3')
+    mixer.music.play()
 
 def play_intro_music():
     global sound_on_off
