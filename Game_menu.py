@@ -101,7 +101,7 @@ def play_gameplay_music():
     global sound_on_off
     if not(sound_on_off):
         return
-    track = randint(0, 3)
+    track = randint(0, 0)
     if track == 0:
         mixer.music.load('Music/music_1.mp3.mid')
     if track == 1:

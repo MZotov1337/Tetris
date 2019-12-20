@@ -297,6 +297,7 @@ class Arkitecture():
             global temporary_buttons
             for b in temporary_buttons:
                 b.destroy()
+            temporary_buttons = []
             return True
         return False
 
