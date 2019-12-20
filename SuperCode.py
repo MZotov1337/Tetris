@@ -2,11 +2,13 @@ from tkinter import Canvas, Label, Tk, StringVar, Button, LEFT
 from random import choice, randint
 import time
 from PIL import ImageTk, Image
-from pygame import mixer
+from Highscore import *
 
 col = ["blue", "yellow", "green", "red", "black", "cyan", "magenta"]
 global images
 images = []
+global temporary_buttons
+temporary_buttons = []
 
 class GameCanvas(Canvas):
     
@@ -184,6 +186,7 @@ class Arkitecture():
     def __init__(self, predictable = False):
         self._level = 1
         self._score = 0
+        self.highscore = 0
         self._Number = 0
         self.speed = 1000
         self.predictable = predictable
@@ -219,6 +222,7 @@ class Arkitecture():
     def new_game(self):
         self.level = 1
         self.score = 0
+        self.highscore = read_highscore_data_from_file()
         self.Number = 0
         self.speed = 500
 
@@ -232,9 +236,11 @@ class Arkitecture():
         self.next_piece = None        
 
         self.game_board = [[0] * ((Arkitecture.width - 20) // Arkitecture.LENGTH) for _ in range(Arkitecture.height // Arkitecture.LENGTH)]
-
+        
+        global temporary_buttons
         early_exit_button = Button(text = 'Выход', font = 'Times 10', command = self.quit)
         early_exit_button.place(x=357, y=500)
+        temporary_buttons.append(early_exit_button)
 
         self.update_piece()
 
@@ -276,7 +282,7 @@ class Arkitecture():
             self.current_piece.predict_drop(self.game_board)
 
     def update_status(self):
-        self.status_var.set(f"Level: {self.level}, Score: {self.score}")
+        self.status_var.set(f"Уровень: {self.level}, Очки: {self.score}, \n Рекорд: {self.highscore}")
         self.status.update()
 
     def is_game_over(self):
@@ -286,6 +292,11 @@ class Arkitecture():
             self.Exit = Button(self.root, text="Выход", command=self.quit) 
             self.Again.place(x = Arkitecture.width + 60, y = 200, width=100, height=25)
             self.Exit.place(x = Arkitecture.width + 60, y = 300, width=100, height=25)
+            if self.score >= self.highscore:
+                write_highscore_data_to_file(self.score)
+            global temporary_buttons
+            for b in temporary_buttons:
+                b.destroy()
             return True
         return False
 
@@ -295,7 +306,6 @@ class Arkitecture():
         self.start()
 
     def quit(self):
-        print('&')
         #self.root.quit()
         #exit()
         self.root.destroy()
@@ -315,8 +325,6 @@ class Arkitecture():
     def game_canvas(self):
         self.canvas = GameCanvas(self.root, width = Arkitecture.width, height = Arkitecture.height, bg = 'Black')
         self.canvas.pack(padx = 5 ,side=LEFT)
-
-
 
     def levelsc(self):
         self.status_var = StringVar()        
